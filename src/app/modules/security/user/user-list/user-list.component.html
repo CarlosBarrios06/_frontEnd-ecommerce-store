@@ -1,0 +1,45 @@
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <div class="card" style="border-radius: 10px;">
+                <div class="card-body text-center">
+                    <span class="titulo">Users List</span>
+                    <button class="btn btn-success float-end" routerLink="/security/user-creation"> Add New</button>
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Id</th>
+                            <th>actions</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let user of users | paginate:{ itemsPerPage:7, currentPage:p}">
+                                <td>{{user?.name}}</td>
+                                <td>{{user?.email}}</td>
+                                <td>{{user?.id}}</td>
+                                <td>
+                                    <div class="justify-content">
+                                        <button class="btn">
+                                            <mat-icon style="color: rgb(0, 2, 100);"
+                                                [routerLink]="['/security/user-creation',user?.id]">edit</mat-icon>
+                                        </button>
+                                        <button class="btn " (click)="deleteUser(user.id)">
+                                            <mat-icon style="color:red">delete</mat-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col offset-4">
+            <pagination-controls style="justify-content: center; " (pageChange)="p = $event"></pagination-controls>
+        </div>
+    </div>
+</div>

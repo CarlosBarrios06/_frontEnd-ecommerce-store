@@ -1,0 +1,110 @@
+<div class="container mt-5 m-b3" style="margin-bottom: 30px;">
+    <div class="row">
+        <div class="col-lg-4" style="background: rgb(250, 250, 253);">
+            <span><b style="font-size: 20px;color: rgb(14, 10, 10);">{{title | uppercase}}</b></span>
+            <form action="" class="mt-3" [formGroup]="productForm" (ngSubmit)="addProduct()">
+                <!--name-->
+                <div>
+                    <label for="name">name</label>
+                    <input type="text" class="form-control form-control-lg ng-untouched ng-pristine  ng-valid"
+                        formControlName="name" placeholder="name" id="name">
+                    <div class="text-danger" *ngIf="productForm.get('name')?.hasError('required')
+                                && productForm.get('name')?.touched">
+                        <h3>The product name is<strong>required</strong></h3>
+
+                    </div>
+                </div>
+                <!--brand-->
+                <div>
+                    <label for="brand">brand</label>
+                    <input type="text" class="form-control form-control-lg ng-untouched ng-pristine  ng-valid"
+                        formControlName="brand" placeholder="brand" id="brand">
+                    <div class="text-danger" *ngIf="productForm.get('brand')?.hasError('required')
+                                && productForm.get('brand')?.touched">
+                        <h3>the Product Brand is <strong>required</strong></h3>
+
+                    </div>
+                </div>
+                <!--category-->
+                <label for="category">category</label>
+                <div class="">
+                    <select formControlName="category" id="category" class="form-select" placeholder="Select Category">
+                        <option disabled selected value="">Select a Product Category</option>
+                        <option *ngFor="let category of categories" [value]="category.name">{{category.name}}</option>
+
+                    </select>
+                    <div class="text-danger" *ngIf="productForm.get('category')?.hasError('required')
+                                && productForm.get('category')?.touched">
+                        <h3>The Product category is <strong>required</strong></h3>
+
+                    </div>
+                </div>
+                <!--price-->
+                <div>
+                    <label for="price">price</label>
+                    <input type="number" class="form-control form-control-lg" id="price" formControlName="price"
+                        placeholder="price">
+
+                    <div class="text-danger" *ngIf="productForm.get('precio')?.hasError('max') 
+                            && productForm.get('price')?.touched">
+                        <h3>the price limit is <strong>40000</strong></h3>
+                    </div>
+                    <div class="text-danger" *ngIf="productForm.get('price')?.hasError('required')
+                            && productForm.get('price')?.touched">
+                        <h3>The product price is<strong>required</strong></h3>
+
+                    </div>
+                </div>
+                <!--discount-->
+                <div>
+                    <label for="discount">discount</label>
+                    <input type="number" class="form-control form-control-lg" id="discount" formControlName="discount"
+                        placeholder="discount">
+                </div>
+                <!--details-->
+                <div>
+                    <label for="details">details</label>
+                    <textarea type="text" class="form-control form-control-lg" id="details" formControlName="details"
+                        placeholder="details"></textarea>
+                </div>
+                <!--image-->
+                <div>
+                    <label for="imgfront">front image</label>
+                    <input type="file" id="imgfront" class="form-control" formControlName="imgfront"
+                        placeholder="imgfront" multiple (change)="loadImage($event)">
+                    <div class="text-danger" *ngIf="productForm.get('imgfront')?.hasError('required')
+                            && productForm.get('imgfront')?.touched">
+                        <h3>The product image is <strong>required</strong>,please insert the image link!</h3>
+                    </div>
+                </div>
+                <div>
+                    <label for="imgback">back image</label>
+                    <input type="file" id="imgback" class="form-control " formControlName="imgback"
+                        placeholder="imgback" multiple (change)="loadImage($event)">
+                    <div class="text-danger" *ngIf="productForm.get('imgback')?.hasError('required')
+                            && productForm.get('imgback')?.touched">
+                        <h3>The product image is <strong>required</strong>,please insert the image link!</h3>
+                    </div>
+                </div>
+                <div>
+                    <label for="imgright">right image</label>
+                    <input type="file" id="imgright" class="form-control" formControlName="imgright"
+                        placeholder="imgright" multiple (change)="loadImage($event)">
+                    <div class="text-danger" *ngIf="productForm.get('imgright')?.hasError('required')
+                            && productForm.get('imgright')?.touched">
+                        <h3>The product image is <strong>required</strong>,please insert the image link!</h3>
+                    </div>
+                </div>
+                <div>
+                    <label for="imgleft">left image</label>
+                    <input type="file" id="imgleft" class="form-control" formControlName="imgleft" placeholder="imgleft"
+                        multiple (change)="loadImage($event)">
+                    <div style="margin-top: 10px;">
+                        <button class="btn btn-success btn-lg" type="submit" style="width: 100%; display: inline-block;"
+                            [disabled]="!productForm.valid">{{id !== null ? 'Update' : 'Add'}}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

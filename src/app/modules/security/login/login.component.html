@@ -1,0 +1,38 @@
+<mat-card>
+    <mat-card-title>Login</mat-card-title>
+    <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="searchUser()">
+            <!--EMAIL-->
+            <p>
+                <mat-form-field>
+                    <input type="email" class="form-control form-control-lg" formControlName="email" matInput
+                        placeholder="email">
+                    <div class="text-danger" *ngIf="loginForm.get('email')?.hasError('required')
+                        && loginForm.get('email')?.touched">
+                        <h3>The email is <strong>required</strong></h3>
+                    </div>
+                </mat-form-field>
+            </p>
+            <!--Password-->
+            <p>
+                <mat-form-field>
+                    <input type="password" class="form-control form-control-lg" formControlName="password" matInput
+                        placeholder="password">
+
+                    <div class="text-danger" *ngIf="loginForm.get('password')?.hasError('required')
+                        && loginForm.get('password')?.touched">
+                        <h3>the password is <strong>required</strong></h3>
+
+                    </div>
+                </mat-form-field>
+            </p>
+            <!--Router link hacia reset password-->
+            <a class="nav-link" routerLink="../reset-password" style="text-decoration: none; color: darkred; text-align: right;">forgot your password?</a>
+            
+                <!--Boton Submit-->
+            <div class="mt-3">
+                <button class="btn btn-success float-start" type="submit" [disabled]="!loginForm.valid">Login</button>              
+            </div>
+        </form>
+    </mat-card-content>
+</mat-card>

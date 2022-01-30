@@ -1,0 +1,24 @@
+<mat-nav-list>
+
+    <li mat-list-item routerLinkActive="active" class="nav-item" style="list-style: none;">
+        <div>
+
+            <div class="btn-group" dropdown>
+                <button id="button" dropdownToggle type="button" class="btn btn-sm dropdown-toggle"
+                    aria-controls="dropdown-animated" style="color:white; margin-top: 3px;">
+                    Categories<span class="caret"></span>
+                </button>
+                <ul id="dropdown-animated" *dropdownMenu class="dropdown-menu" role="menu"
+                    style="color:rgb(59, 3, 212); margin-left: 0px;" aria-labelledby="button-animated">
+                    <li role="menuitem" style="color:rgb(4, 1, 10);" *ngFor="let category of categories">
+                        <a class="dropdown-item" [href]="['home/'+category?.name]">{{category?.name}}</a>                        
+                    </li>
+                    <li role="menuitem" style="color:rgb(4, 1, 10);" *ngFor="let category of categories">
+                        <a class="dropdown-item" [href]="['home/'+category?.name]">{{category?.name}}</a>                        
+                    </li>                     
+                </ul>
+            </div>
+        </div>
+    </li>
+
+</mat-nav-list>

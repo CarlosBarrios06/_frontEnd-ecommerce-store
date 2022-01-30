@@ -1,0 +1,154 @@
+<nav
+  class="navbar sticky-top navbar-expand-lg navbar-dark px-2"
+  style="position: relative; background: rgb(17, 139, 238); margin-right: 0px"
+>
+  <a class="navbar-brand" routerLink="/home">
+    <img
+      width="40"
+      alt="Angular Logo"
+      src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg=="
+      alt="logo"
+    />
+  </a>
+  <button
+    class="navbar-toggler collapsed"
+    type="button"
+    (click)="toggleState()"
+  >
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div
+    class="navbar-collapse"
+    [ngClass]="{ collapse: isCollapse }"
+    style="justify-content: right; margin-right: 0px"
+  >
+    <ul class="navbar-nav mr-auto">
+      <li
+        *ngIf="session"
+        routerLinkActive="active"
+        class="nav-item"
+        style="color: white"
+      >
+        <a class="nav-link" routerLink="/"
+          >Inicio <span class="sr-only">(current)</span></a
+        >
+      </li>
+
+      <li
+        *ngIf="session"
+        routerLinkActive="active"
+        class="nav-item"
+        style="color: white"
+      >
+        <a class="nav-link" routerLink="parameter/brand-list">Brands</a>
+      </li>
+      <li
+        *ngIf="session"
+        routerLinkActive="active"
+        class="nav-item"
+        style="color: white"
+      >
+        <a class="nav-link" routerLink="parameter/category-list">Category</a>
+      </li>
+
+      <li
+        *ngIf="USER"
+        routerLinkActive="active"
+        class="nav-item"
+        style="color: white"
+      >
+        <a class="nav-link" routerLink="product/product-list">Products</a>
+      </li>
+      <li
+        *ngIf="USER"
+        routerLinkActive="active"
+        class="nav-item"
+        style="color: white"
+      >
+        <a class="nav-link" routerLink="security/user-list">Users</a>
+      </li>
+      <li
+        *ngIf="session"
+        routerLinkActive="active"
+        class="nav-item"
+        style="color: white"
+      >
+        <a class="nav-link" routerLink="reports/brand-reports"
+          >Reports By Brand</a
+        >
+      </li>
+      <li
+        *ngIf="!USER"
+        routerLinkActive="active"
+        class="nav-item"
+        style="text-decoration: none"
+      >
+        <a class="nav-link" routerLink="security/login">Login</a>
+      </li>
+
+      <li
+        *ngIf="!USER"
+        routerLinkActive="active"
+        class="nav-item"
+        style="color: white"
+      >
+        <a class="nav-link" routerLink="security/user-creation"> Register</a>
+      </li>
+      <li
+        *ngIf="USER"
+        routerLinkActive="active"
+        class="nav-item"
+        style="color: white"
+      >
+        <div style="margin-right: 0px">
+          <div class="btn-group" dropdown>
+            <button
+              id="button"
+              dropdownToggle
+              type="button"
+              class="btn btn-sm text-white dropdown-toggle"
+              aria-controls="dropdown-animated"
+              style="margin-top: 3px"
+            >
+              Settings <span class="caret"></span>
+            </button>
+            <ul
+              id="dropdown-animated"
+              *dropdownMenu
+              class="dropdown-menu"
+              role="menu"
+              style="margin-left: -60px"
+              aria-labelledby="button-animated"
+            >
+              <li role="menuitem">
+                <a class="dropdown-item" routerLink="/security/change-password"
+                  >Change Password</a
+                >
+              </li>
+              <li *ngIf="USER" role="menuitem">
+                <a class="dropdown-item" (click)="logout()"
+                  ><mat-icon>logout</mat-icon>Close User Session</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </li>
+
+      <li routerLinkActive="active" class="nav-item" style="margin-right: 0px">
+        <button
+          (click)="toggleSidenav()"
+          class="nav-link btn btn-sm"
+          style="
+            background: rgb(17, 139, 238);
+            color: white;
+            text-decoration: dashed;
+          "
+        >
+          Menu
+        </button>
+      </li>
+    </ul>
+  </div>
+</nav>

@@ -1,0 +1,45 @@
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card" style="border-radius: 10px;">
+                <div class="card-body text-center">
+                    <span class="titulo">Listado de productos</span>
+                    <button class="btn btn-success float-end" routerLink="/product/product-creation">Nuevo</button>
+                    <table class="table table-striped mt-3">
+                        <thead>
+                            <th>product</th>
+                            <th>category</th>
+                            <th>price</th>
+                            <th>actions</th>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let product of products | paginate:{ itemsPerPage:7, currentPage:p}">
+                                <td>{{product?.name}}</td>
+                                <td>{{product?.category}}</td>
+                                <td>{{product?.price}}</td>
+                                <td>
+                                    <div class="justify-content">
+                                        <button class="btn btn-space">
+                                            <mat-icon style="color: rgb(0, 2, 100);"
+                                                [routerLink]="['/product/product-creation',product?.id]">edit</mat-icon>
+                                        </button>
+                                        <button class="btn btn-space" (click)="deleteProduct(product.id)">
+                                            <mat-icon style="color:red">delete</mat-icon>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>       
+    </div>
+</div>
+<div class="container">
+    <div class="row">
+        <div class="col offset-4">
+            <pagination-controls style="justify-content: center; " (pageChange)="p = $event"></pagination-controls>
+        </div>
+    </div>
+</div>
