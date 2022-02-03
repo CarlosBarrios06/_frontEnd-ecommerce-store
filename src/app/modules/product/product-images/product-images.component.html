@@ -5,16 +5,16 @@
                 <div class="col-8 offset-2" style="margin-top: 50px;">
                     <carousel style="color: black;">
                         <slide>
-                            <img src="{{product?.imgfront}}" alt="first slide" class="imgComent" >
+                            <img src="{{product?.imgfront}}" alt="first slide" class="imgComment" >
                         </slide>
                         <slide>
-                            <img src="{{product?.imgleft}}" alt="second slide" class="imgComent">
+                            <img src="{{product?.imgleft}}" alt="second slide" class="imgComment">
                         </slide>
                         <slide>
-                            <img src="{{product?.imgright}}" alt="third slide" class="imgComent">
+                            <img src="{{product?.imgright}}" alt="third slide" class="imgComment">
                         </slide>
                         <slide>
-                            <img src="{{product?.imgback}}" alt="third slide" class="imgComent">
+                            <img src="{{product?.imgback}}" alt="third slide" class="imgComment">
                         </slide>
                     </carousel>        
                 </div>                
@@ -25,15 +25,15 @@
                         <div class="col-12 tab">
                             <tabset [justified]="true" >
                                 <tab heading="Characteristics">
-                                    <h1><b>{{product?.discount > 0? 'Before: ':'Price: '}}</b>{{product?.price | currency:'NIO '}}
+                                    <h1 class="spacer"><b>{{product?.discount > 0? 'Before: ':'Price: '}}</b>{{product?.price | currency:'NIO '}}
                                     </h1>
-                                    <h1 *ngIf="discount > 0"><b>Now: </b>{{productPrice | currency:'NIO '}}</h1>
-                                    <h1><b>Brand: </b>{{product?.brand | uppercase}}</h1>
-                                    <h1><b>Name: </b>{{product?.name | uppercase}}</h1>
-                                    <h1 *ngIf="discount > 0"><b>Discount: </b>{{discount|percent}}</h1>
+                                    <h1 class="spacer" *ngIf="discount > 0"><b>Now: </b>{{productPrice | currency:'NIO '}}</h1>
+                                    <h1 class="spacer"><b>Brand: </b>{{product?.brand | uppercase}}</h1>
+                                    <h1 class="spacer"><b>Name: </b>{{product?.name | uppercase}}</h1>
+                                    <h1 class="spacer" *ngIf="discount > 0"><b>Discount: </b>{{discount|percent}}</h1>
                                 </tab>
                                 <tab heading="Technical Details">
-                                    <p>{{product.details}}</p>
+                                    <p class="spacer">{{product.details}}</p>
                                 </tab>
                             </tabset>
                         </div>
@@ -45,14 +45,14 @@
         </div>
         
 
-        <!-- comentaries -->
+        <!-- comments -->
 
-        <div class="col-sm-4 comentForm">
-            <div class="row comentaries">
+        <div class="col-sm-4 commentForm">
+            <div class="row comments">
                 <h4><b>Coment about this product, your opinion is very important!</b></h4>
                 <div class="col-12">
-                    <form action="" [formGroup]="form" (ngSubmit)="coment()" class="coment">
-                        <textarea name="" id="coment" cols="30" rows="10" formControlName="coment"></textarea>
+                    <form [formGroup]="form" (ngSubmit)="comment()" class="comment">
+                        <textarea name="comment textarea" class="textarea" id="comment" cols="30" rows="10" formControlName="comment"></textarea>
                         <br>
                         <div>
                             <label for="" style="margin-right: 10px;">Name</label>
@@ -66,46 +66,46 @@
                             <option>other</option>
                         </select>
                         <br>
-                        <button class="btn btn btn-success" type="submit" [disabled]="!form.valid">Coment</button>
+                        <button class="btn btn btn-success" type="submit" [disabled]="!form.valid">Comment</button>
                     </form>
                     <br>
                     <table class="table table-striped  mt-3">
 
                         <th>
-                            <h3>Comentaries about this product</h3>
+                            <h3> {{ comments.length === 0 ? 'There Are Not Comments About This Product': 'Comments about this product '}}</h3>
                         </th>
-
-                        <tbody>
-                            <tr *ngFor="let coment of comentaries | paginate:{ itemsPerPage:3, currentPage:p}">
+                        <tbody *ngIf="comments">
+                            <tr *ngFor="let comment of comments | paginate:{ itemsPerPage:3, currentPage:p}">
                                 <td style="border-bottom: 1px solid; ">
                                     <div class="row" style="margin-top: 20px;">
                                         <div class="col-1" style="margin-top:15px; ">
-                                            <img *ngIf="coment?.genre === 'female'"
+                                            <img *ngIf="comment?.genre === 'female'"
                                                 src="./../../../../assets/images/descarga.jpg" alt="female"
                                                 class="genre">
-                                            <img *ngIf="coment?.genre === 'male'"
+                                            <img *ngIf="comment?.genre === 'male'"
                                                 src="./../../../../assets/images/programmer.png" alt="male"
                                                 class="genre">
-                                            <img *ngIf="coment?.genre === 'other'"
+                                            <img *ngIf="comment?.genre === 'other'"
                                                 src="./../../../../assets/images/istockphoto-1206193229-1024x1024.jpg"
                                                 alt="undefined" class="genre">
                                         </div>
-                                        <div class="col-1 comentName">
-                                            <h5><b>{{coment.name}}</b></h5>
+                                        <div class="col-1 commentName">
+                                            <h5><b>{{comment.name}}</b></h5>
                                         </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12" >
-                                            <p class="comentText">{{coment.coment}}</p>
+                                            <p class="commentText">{{comment.comment}}</p>
                                         </div>
                                     </div>
                                     <div class="row">
+                                        <div *ngIf="!admin" class="col-4"></div>
                                         <div *ngIf="admin" class="col-4">
-                                            <button class="btn btn-sm" style="color:red" (click)="deleteComent(coment.id)"><mat-icon>delete</mat-icon></button>
+                                            <button class="btn btn-sm" style="color:red" (click)="deleteComent(comment.id)"><mat-icon>delete</mat-icon></button>
                                         </div>
                                         <div class="col-4"></div>
                                         <div class="col-4" style="display:inline-table; color:rgb(2, 7, 12)">
-                                            <p>{{coment.createdAt | date}}</p>
+                                            <p>{{comment.createdAt | date}}</p>
                                         </div>
                                     </div>
                                 </td>
@@ -114,7 +114,7 @@
                     </table>
                     <div class="container">
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-12" *ngIf="comments === null">
                                 <pagination-controls style="justify-content: center; " (pageChange)="p = $event"
                                     previousLabel="" nextLabel=""></pagination-controls>
                             </div>
@@ -123,8 +123,8 @@
                 </div>
             </div>
         </div>
-
     </div>
+    <ngx-spinner></ngx-spinner>
 </div>
 
 

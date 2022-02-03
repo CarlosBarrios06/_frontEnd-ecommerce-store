@@ -1,46 +1,60 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from 'src/app/core/services/api.service';
-import { Product } from '../models/product.model';
-
+import { SubscriptionsContainer } from 'src/app/shared/helpers/subscriptions-container';
+import { Product } from '../../../shared/Models/product.interface';
 @Component({
   selector: 'app-product-list',
   templateUrl: './product-list.component.html',
-  styleUrls: ['./product-list.component.scss']
+  styleUrls: ['./product-list.component.scss'],
 })
-export class ProductListComponent implements OnInit {
-products: Product[] = [];
-p: number = 1;
-loading: boolean = false;
-  constructor(private api: ApiService, private notification: ToastrService) { }
+export class ProductListComponent implements OnInit, OnDestroy {
+  products: Product[] = [];
+  p: number = 1;
+  loading: boolean = false;
+  subs = new SubscriptionsContainer();
 
-  ngOnInit(): void {   
-   this.loadData();
+  constructor(
+    private api: ApiService,
+    private notification: ToastrService,
+    private spinner: NgxSpinnerService
+  ) {}
+  
+  ngOnDestroy(): void {
+    this.subs.dispose();
   }
 
+  ngOnInit(): void {
+    this.loadData();
+    this.spinner.show();
+  }
 
   deleteProduct(id: any) {
-
-    console.log(id)
-    this.api.sendDelete('delete-product/'+id)
-      .subscribe(res => {
-        this.notification.warning("product deleted succefull");
-        this.api.sendGet('get-products')
-        this.loadData()
-      }, error => {
-        this.notification.warning('error to delete product')
-      })
-      this.api.sendDelete('delete-coments/'+id).subscribe(res => {
-        console.log(res)
-      })
+    this.subs.add = this.api.sendDelete('delete-product/' + id).subscribe(
+      (res) => {
+        this.notification.success('product deleted successfully');
+        this.api.sendGet('get-products');
+        this.loadData();
+      },
+      (error) => {
+        this.notification.error('error to delete product');
+      }
+    );
+    this.api.sendDelete('delete-coments/' + id).subscribe((res) => {});
   }
 
-  loadData(){
-    this.api.sendGet('get-products').subscribe((res:any) => {
-      this.products = res.data;
-    }, error => {
-      console.log('algo salio mal', error)
-    })
+  loadData() {
+    this.subs.add = this.api.sendGet('get-products').subscribe(
+      (res: any) => {
+        if (res) {
+          this.spinner.hide();
+        }
+        this.products = res.data;
+      },
+      (error) => {
+        console.log('algo salio mal', error);
+      }
+    );
   }
-
 }

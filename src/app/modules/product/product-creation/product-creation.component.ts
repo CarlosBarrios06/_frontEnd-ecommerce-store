@@ -1,32 +1,36 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from 'src/app/core/services/api.service';
-import { Img } from '../../security/change-password/change-password.component';
-import { Product } from '../models/product.model';
-
-
+import { Product } from '../../../shared/Models/product.interface';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { SubscriptionsContainer } from 'src/app/shared/helpers/subscriptions-container';
+import { Img } from 'src/app/shared/Models/img.interface';
 
 @Component({
   selector: 'app-product-creation',
   templateUrl: './product-creation.component.html',
   styleUrls: ['./product-creation.component.scss']
 })
-export class ProductCreationComponent implements OnInit {
+export class ProductCreationComponent implements OnInit, OnDestroy {
   productForm: FormGroup;
   products: Product[] = [];
   id: string;
   title: string = 'Create Product';
   categories = [];
   imgs: Img[] = [];
+  subs = new SubscriptionsContainer();
 
-  constructor(private pf: FormBuilder, private router: Router,
+  constructor(private pf: FormBuilder, 
+    private router: Router,
     private notification: ToastrService,
     private route: ActivatedRoute,
     private api: ApiService,
-    private sanitizer: DomSanitizer,) {
+    private sanitizer: DomSanitizer,
+    private spinner: NgxSpinnerService,
+    ) {
     this.productForm = this.pf.group({
       name: ['', Validators.required],
       brand: ['', Validators.required],
@@ -40,7 +44,10 @@ export class ProductCreationComponent implements OnInit {
       imgleft: [''],
     })
     this.id = this.route.snapshot.paramMap.get('id')!
-    console.log(this.id)
+    
+  }
+  ngOnDestroy(): void {
+    this.subs.dispose();
   }
 
   ngOnInit(): void {
@@ -67,23 +74,14 @@ export class ProductCreationComponent implements OnInit {
   })
   //conveter of image to string
   loadImage(event: any) {
-
     let files = event.target.files[0]
-    console.log(files)
-    this.extract64Base(files).then((img: any) => {
+    this.extract64Base(files).then((img: Img) => {
       // this.preview = img.base;
       const file: Img = {
         base: img.base
       }
       this.imgs.push(file);
-    })
-
-    // let reader = new FileReader();
-    // reader.readAsDataURL(files)
-    // reader.onloadend = () => {
-
-    // }
-    // console.log(reader.result);
+    }); 
   }
 
 
@@ -108,9 +106,12 @@ export class ProductCreationComponent implements OnInit {
     PRODUCT.imgleft = this.imgs[3].base
 
     if (this.id !== null) {
-      this.api.sendPut(`update-product/${this.id}`, PRODUCT).subscribe(data => {
-        console.log(data)
-        this.notification.info("El producto ha sido editado con exito", "producto actualizado")
+      this.subs.add = this.api.sendPut(`update-product/${this.id}`, PRODUCT).subscribe(data => {
+        this.spinner.show();
+        if(data){
+          this.spinner.hide();
+        }
+        this.notification.success("El producto ha sido editado con exito", "producto actualizado")
         this.router.navigate(['/'])
       }, error => {
         console.log('algo salio mal')
@@ -118,7 +119,11 @@ export class ProductCreationComponent implements OnInit {
       })
     } else {
       this.products.push(PRODUCT);
-      this.api.sendPost('create-product', PRODUCT).subscribe((res) => {
+      this.subs.add = this.api.sendPost('create-product', PRODUCT).subscribe((res) => {
+        this.spinner.show();
+        if(res){
+          this.spinner.hide();
+        }
         this.productForm.reset();
         this.notification.success('Registro satisfactorio', 'producto añadido con exito!!!')
         this.router.navigate(['/product/product-list'])
@@ -131,14 +136,16 @@ export class ProductCreationComponent implements OnInit {
 
   //Edit Mode
   isEdit() {
-    console.log(this.id)
+
     if (this.id !== null) {
       this.title = 'Editar Producto';
       console.log(this.id)
       console.log(this.products)
-      this.api.sendGet(`get-product/${this.id}`).subscribe((res: any) => {
-        console.log(res);
-
+     this.subs.add = this.api.sendGet(`get-product/${this.id}`).subscribe((res: Product) => {
+        this.spinner.show();
+        if(res){
+          this.spinner.hide();
+        }
         this.productForm.setValue({
           name: res.name,
           brand: res.brand,
@@ -151,18 +158,20 @@ export class ProductCreationComponent implements OnInit {
           imgright: res.imgright,
           imgleft: res.imgleft,
         })
-        console.log(this.productForm)
       })
     }
   };
   //get category from API
   getCategory() {
-    this.api.sendGet('get-categories').subscribe(res => {
-      this.categories = res.data
-      console.log(this.categories)
+    this.subs.add = this.api.sendGet('get-categories').subscribe(res => {
+      this.spinner.show();
+      if(res){
+        this.spinner.hide();
+      }
+      this.categories = res.data;
     }, error => {
       this.notification.error('algo ha salido mal')
-    })
+    });
   }
 
 }

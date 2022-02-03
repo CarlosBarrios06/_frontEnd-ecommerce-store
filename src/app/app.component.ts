@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
-import { EmitterService } from './shared/services/emitter.service';
+import { EmitterService } from './core/services/emitter.service';
 
 @Component({
   selector: 'app-root',
@@ -16,7 +16,5 @@ export class AppComponent implements OnInit {
       this.drawer.toggle();
     })
   }
-
-
 
 }

@@ -1,93 +1,60 @@
-import { Component, OnInit } from '@angular/core';
-import { DomSanitizer } from '@angular/platform-browser';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
 import { ApiService } from 'src/app/core/services/api.service';
-
-
-export class Img {
-  base: string;
-};
-
-
+import { UserService } from 'src/app/core/services/user-service.service';
+import { EncryptPassword } from 'src/app/shared/helpers/encryptPassword';
+import { SubscriptionsContainer } from 'src/app/shared/helpers/subscriptions-container';
+import { User } from 'src/app/shared/Models/user.model';
 @Component({
   selector: 'app-change-password',
   templateUrl: './change-password.component.html',
-  styleUrls: ['./change-password.component.scss']
+  styleUrls: ['./change-password.component.scss'],
 })
-export class ChangePasswordComponent implements OnInit {
-  imgs: Img[] = []
-  preview: Img;
-  loading: boolean;
+export class ChangePasswordComponent implements OnInit, OnDestroy {
+  form: FormGroup;
+  user: User;
+  subs = new SubscriptionsContainer();
   constructor(
     private api: ApiService,
-    private sanitizer: DomSanitizer,
-  ) {}
-
-  ngOnInit(): void {
+    private formB: FormBuilder,
+    private userSrvc: UserService,
+    private router: Router,
+    private notification: ToastrService
+  ) {
+    this.form = this.formB.group({
+      email: ['', Validators.required],
+      password: ['', Validators.required],
+    });
+  }
+  ngOnDestroy(): void {
+    this.subs.dispose();
   }
 
-  loadImage(event: any) {
+  ngOnInit(): void {}
 
-    let files = event.target.files[0]
-    console.log(files)
-    this.extract64Base(files).then((img: any) => {
-      this.preview = img.base;
-      const file: Img = {
-        base: img.base
-      }
-      this.imgs.push(file);
-    })
-
-    // let reader = new FileReader();
-    // reader.readAsDataURL(files)
-    // reader.onloadend = () => {
-
-    // }
-    // console.log(reader.result);
-  }
-
-  extract64Base = async ($event: any) => new Promise((resolve, reject) => {
-    try {
-      const unsafeImg = window.URL.createObjectURL($event);
-      const image = this.sanitizer.bypassSecurityTrustUrl(unsafeImg);
-      const reader = new FileReader();
-      reader.readAsDataURL($event);
-      reader.onload = () => {
-        resolve({
-          blob: $event,
-          image,
-          base: reader.result
-        });
-      };
-    } catch (e) {
-      return null;
-    }
-  })
-
-  uploadFile() {
-    const img = {
-      base: this.imgs[0].base
+  getInfo() {
+    const info = {
+      email: this.form.get('email').value,
+      password: EncryptPassword(this.form.get('password').value),
     };
-    this.api.sendPost('post-img/', img).subscribe(res => {
-      this.loading = false;
-      console.log('Server Request', res);
-    })
-
-    // try{
-    //   this.loading = true
-    //   const dataForm = new FormData();
-    //   this.imgs.forEach((img:Img) => {
-    //     console.log(img);
-    //     dataForm.append('file', img)
-    //   })
-    //   this.api.sendPost('post-img/',dataForm).subscribe(res =>{
-    //     this.loading = false;
-    //     console.log('Server Request', res);
-    //   })
-    // }catch(e){
-    //   this.loading = false;
-    //   console.log('ERROR', e)
-    // }
+    this.subs.add = this.userSrvc
+      .verifyPassword(info.email, info.password)
+      .subscribe(
+        (res: User) => {
+          if (res) {
+            this.user = res[0];
+            this.form.reset();
+            this.notification.success(
+              'Your password and email has been verified'
+            );
+          }
+        },
+        (error) => {
+          this.notification.error('Error', error);
+          console.log(error);
+        }
+      );
   }
-
 }

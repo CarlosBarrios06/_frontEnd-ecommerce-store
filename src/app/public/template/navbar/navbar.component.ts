@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { EmitterService } from 'src/app/shared/services/emitter.service';
 import { Router } from '@angular/router';
-import { UserService } from 'src/app/shared/services/user-service.service';
+import { EmitterService } from 'src/app/core/services/emitter.service';
+import { UserService } from 'src/app/core/services/user-service.service';
 
 @Component({
   selector: 'app-navbar',
@@ -11,7 +11,6 @@ import { UserService } from 'src/app/shared/services/user-service.service';
 
 export class NavbarComponent implements OnInit {
   isCollapse = false;
-  session: boolean = false;
   ADMIN: any;
   loged: boolean;
   USER: any;
@@ -22,7 +21,7 @@ export class NavbarComponent implements OnInit {
   ) {
 
     this.userSrvc.user.subscribe((x) => {
-      this.USER = x;
+      this.USER = x;      
     })
 
 
