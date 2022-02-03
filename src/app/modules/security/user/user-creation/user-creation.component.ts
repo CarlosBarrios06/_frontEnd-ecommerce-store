@@ -1,101 +1,126 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { BsModalService, BsModalRef } from 'ngx-bootstrap/modal';
 import { ApiService } from 'src/app/core/services/api.service';
-
-
+import { SubscriptionsContainer } from 'src/app/shared/helpers/subscriptions-container';
+import { EncryptPassword } from 'src/app/shared/helpers/encryptPassword';
+import { UserService } from 'src/app/core/services/user-service.service';
+import { User } from 'src/app/shared/Models/user.model';
 
 @Component({
   selector: 'app-user-creation',
   templateUrl: './user-creation.component.html',
-  styleUrls: ['./user-creation.component.scss']
+  styleUrls: ['./user-creation.component.scss'],
 })
-export class UserCreationComponent implements OnInit {
-  userForm: FormGroup
-  modalRef?: BsModalRef;
+export class UserCreationComponent implements OnInit, OnDestroy {
+  userForm: FormGroup;
   id: string;
-  title: string = 'Create User'
+  title: string = 'Create User';
+  subs = new SubscriptionsContainer();
+  user: User;
+  admin:User;
 
-  constructor(private api: ApiService, private router: Router, private notification: ToastrService,
-    private uf: FormBuilder, private modalService: BsModalService, private route: ActivatedRoute) {
+  constructor(
+    private api: ApiService,
+    private router: Router,
+    private notification: ToastrService,
+    private uf: FormBuilder,
+    private route: ActivatedRoute,
+    private userSrvc: UserService
+  ) {
     this.userForm = this.uf.group({
       name: ['', Validators.required],
       email: ['', Validators.required],
       password: ['', Validators.required],
-      repeatPassword: ['', [Validators.required]]
-    })
+      repeatPassword: ['', [Validators.required]],
+    });
 
-    this.id = this.route.snapshot.paramMap.get('id')!
+    this.id = this.route.snapshot.paramMap.get('id')!;
+     const user = localStorage.getItem('user');
+   
+    if (user) {
+      const USER = JSON.parse(localStorage.getItem('user')); 
+      this.admin = USER;
+      // if is loged and want to modify his/her user data and access by his/her id
+      if (this.id === USER.id){
+        return
+      }else{
+        // if he/she is loged and want to modify without using an id to enter or using another employee id
+        this.router.navigate(['/']);
+      }
+      
+    };
+  }
+  ngOnDestroy(): void {
+    this.subs.dispose();
   }
 
   ngOnInit(): void {
-    this.isEdit()
+    this.isEdit();
   }
 
-
   addUser() {
-    const USER: any = {
-      name: this.userForm.get('name')?.value,
-      email: this.userForm.get('email')?.value,
-      password: this.userForm.get('password')?.value,
-      repeatPassword: this.userForm.get('repeatPassword')?.value,
-    };
+    if (this.userForm.get('password')?.value === this.userForm.get('repeatPassword')?.value) {
+      const USER: User = {
+        name: this.userForm.get('name')?.value,
+        email: this.userForm.get('email')?.value,
+        password: EncryptPassword(this.userForm.get('password')?.value),
+        role: 'User',
+      };
+      this.user = USER;
+    }
+
     if (this.id !== null) {
-      if (USER.password === USER.repeatPassword) {
-        console.log(this.id)
-        this.api.sendPut(`update-user/${this.id}`, USER).subscribe(data => {
-          this.notification.info("User Updated Successfully", "User Updated")
-          this.router.navigate(['/'])
-        }, error => {
-          this.notification.error("Error", "User no Updated")
-          console.log('algo salio mal')
-          // this.userForm.reset();
-        })
-      } else {
-        alert('las contraseñas no coinciden')
-      }
-
-
-
+      
+      this.subs.add = this.api
+        .sendPut(`update-user/${this.id}`, this.user)
+        .subscribe(
+          (data) => {
+            this.notification.success('User Updated Successfully', 'User Updated');
+            this.router.navigate(['/']);
+          },
+          (error) => {
+            this.notification.error('Error', 'User no Updated');
+            console.log('algo salio mal');
+            // this.userForm.reset();
+          }
+        );
     } else {
-
-      if (USER.password === USER.repeatPassword) {
-        this.api.sendPost('create-user', USER).subscribe((res) => {          
-          this.notification.success('Registro satisfactorio', 'usuario añadido con exito!!!')
+      this.subs.add = this.userSrvc.register(this.user).subscribe(
+        (res) => {
+          this.notification.success(
+            'Registro satisfactorio',
+            'usuario añadido con exito!!!'
+          );
           this.userForm.reset();
-          this.router.navigate(['/security/login'])
-        }, error => {
-          console.log('algo salio mal')
-        })
-      } else {
-        alert('las contraseñas no coinciden')
-      }
-    };
-  };
+          this.router.navigate(['/security/login']);
+        },
+        (error) => {
+          console.log('algo salio mal', error);
+        }
+      );
+    }
+  }
 
   isEdit() {
     if (this.id !== null) {
-      this.title = 'Edit User'
-      console.log(this.id);
-      this.api.sendGet(`get-user/${this.id}`).subscribe((res: any) => {
-        this.userForm.setValue({
-          name: res.name,
-          email: res.email,
-          password: res.password,
-          repeatPassword: 0
-        })
-      }, error => {
-        this.notification.error('errr', error);
-        console.log(error);
-      }
-      )
-      // let object = this.productos.filter((producto: { _id: any; }) => {
-      //   return producto._id === this.id;
-      // })
+      this.title = 'Edit User';
+      this.subs.add = this.api.sendGet(`get-user/${this.id}`).subscribe(
+        (res: any) => {
+          this.userForm.setValue({
+            name: res.name,
+            email: res.email,
+            password: res.password,
+            repeatPassword: 0,
+          });
+        },
+        (error) => {
+          this.notification.error('error', error);
+          console.log(error);
+        }
+      );
+     
     }
-  };
-
-
+  }
 }

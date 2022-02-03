@@ -1,14 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from 'src/app/core/services/api.service';
-import { Product } from 'src/app/modules/product/models/product.model';
-
-export class Category {
-  name: string;
-};
-export class Brand {
-  brand: string;
-};
+import { SubscriptionsContainer } from 'src/app/shared/helpers/subscriptions-container';
+import { Category } from 'src/app/shared/Models/category.interface';
 
 @Component({
   selector: 'app-sidenav',
@@ -17,13 +11,16 @@ export class Brand {
 })
 
 
-export class SidenavComponent implements OnInit {
-  
+export class SidenavComponent implements OnInit, OnDestroy {  
 categories: Category[] = [];
-id: any
+id: string;
+subs = new SubscriptionsContainer();
 
   constructor(private api: ApiService, private route: ActivatedRoute ) { 
     
+  }
+  ngOnDestroy(): void {
+    this.subs.dispose();
   }
 
   ngOnInit(): void {
@@ -32,7 +29,7 @@ id: any
   }
 
 getItems(){
-  this.api.sendGet('get-categories').subscribe((res:any) => {
+ this.subs.add = this.api.sendGet('get-categories').subscribe((res:any) => {
     this.categories = res.data;
   }, error => {
     console.log('algo salio mal', error)

@@ -10,49 +10,31 @@
                   <i class="fas fa-circle-notch fa-spin" *ngIf="loading"></i>
                 </div>
               </div>
-              <input class="form-control" #searchInput placeholder="buscar por nombre...">
+              <input class="form-control" style="margin-left: 10px;" #searchInput placeholder="search by name...">
             </div>
           </div>
         </div>
       </div>
-    
-    <!-- <div class="row">
-        
-        <div class="col-1">
-            <mat-icon style="float:right">search</mat-icon>
-        </div>
-        <div class="col-8">
-            
-            <input type="search" aria-label="search" matInput  placeholder="search product" class="form-control" name="search"
-                [(ngModel)]="search">
-        </div>
-    </div> -->
 </div>
 
 <div class="container">
     <section class="row home">
-        <mat-card class="card h-100"
-            style="margin-top: 20px; height: 320px; width: 290px; background: rgb(240, 238, 236); margin-left: 30px;"
+        <mat-card class="card h-100 home-card"           
             *ngFor="let product of products | paginate:{ itemsPerPage:12, currentPage:p} | filter: search">
             <mat-card-header>
                 <mat-card-title style="text-transform: uppercase;" >{{product?.name | uppercase}}</mat-card-title>
             </mat-card-header>
             <mat-card-content align="center">
-                <img [src]="product.imgfront" class="card-img-top" style="width:190px;  height: 220px;  ">
-                <h5>Price: {{product?.price | currency:'NIO '}}</h5>
+              <a class="" style="color: rgb(12, 11, 11);" (click)="getInformation(product?.id)">
+                <img [src]="product.imgfront" class="card-img-top" style="width:190px;  height: 220px;">
+                <h5>Price: {{product?.price | currency:'NIO '}}</h5></a>                
             </mat-card-content>
-
-            <mat-card-actions>
-                <button class="btn btn-info" style="color: white;" (click)="getInformation(product?.id)">Ver
-                    informacion
-                    completa</button>
-            </mat-card-actions>
-
         </mat-card>
     </section>
     <div class="col-4 offset-4">
-        <pagination-controls style="justify-content: center; margin-left: 50px;" (pageChange)="p = $event">
+        <pagination-controls *ngIf="products" style="justify-content: center; margin-left: 50px;" (pageChange)="p = $event">
         </pagination-controls>
     </div> 
+    <ngx-spinner></ngx-spinner>
 </div>
 
