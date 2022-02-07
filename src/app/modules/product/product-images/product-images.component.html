@@ -114,7 +114,7 @@
                     </table>
                     <div class="container">
                         <div class="row">
-                            <div class="col-12" *ngIf="comments === null">
+                            <div class="col-12" *ngIf="comments.length > 3">
                                 <pagination-controls style="justify-content: center; " (pageChange)="p = $event"
                                     previousLabel="" nextLabel=""></pagination-controls>
                             </div>

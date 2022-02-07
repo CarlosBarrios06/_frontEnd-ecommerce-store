@@ -16,6 +16,7 @@ import { FilterPipe } from './shared/pipes/filter.pipe';
 import { JwtInterceptor } from './core/interceptor/jwt.interceptor';
 import {BsDropdownModule} from 'ngx-bootstrap/dropdown';
 import { SharedModule } from './shared/shared.module';
+import { SortPipe } from './shared/pipes/sort.pipe';
 
 
 
@@ -33,6 +34,7 @@ import { SharedModule } from './shared/shared.module';
     HomeComponent,
     SidenavComponent,
     FilterPipe,
+    SortPipe,
     
     
   ],

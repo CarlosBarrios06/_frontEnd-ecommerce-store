@@ -37,7 +37,13 @@ export class UserListComponent implements OnInit, OnDestroy {
 
   loadData() {
    this.subs.add = this.api.sendGet('get-users').subscribe((res: any) => {
-      this.users = res.data;
+     if(res){
+       let order = res.data.sort((a,b) =>(a.createdAt > b.createdAt)? -1 : 1);
+       this.users = order       
+     }else{
+       this.users = res.data;       
+     }
+      
     }, error => {
       this.notification.error("Error", error)
       console.log('algo salio mal', error)

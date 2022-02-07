@@ -7,6 +7,7 @@ import { SubscriptionsContainer } from 'src/app/shared/helpers/subscriptions-con
 import { EncryptPassword } from 'src/app/shared/helpers/encryptPassword';
 import { UserService } from 'src/app/core/services/user-service.service';
 import { User } from 'src/app/shared/Models/user.model';
+import { first } from 'rxjs/operators';
 
 @Component({
   selector: 'app-user-creation',
@@ -60,33 +61,49 @@ export class UserCreationComponent implements OnInit, OnDestroy {
     this.isEdit();
   }
 
-  addUser() {
-    if (this.userForm.get('password')?.value === this.userForm.get('repeatPassword')?.value) {
-      const USER: User = {
-        name: this.userForm.get('name')?.value,
-        email: this.userForm.get('email')?.value,
-        password: EncryptPassword(this.userForm.get('password')?.value),
-        role: 'User',
-      };
-      this.user = USER;
-    }
+  addUser() { 
+    
+      //to edit and add normal register
+      if (this.userForm.get('password')?.value === this.userForm.get('repeatPassword')?.value) {
+        const USER: User = {
+          name: this.userForm.get('name')?.value,
+          email: this.userForm.get('email')?.value,
+          password: EncryptPassword(this.userForm.get('password')?.value),
+        };
+        this.user = USER;
+      }
 
     if (this.id !== null) {
-      
-      this.subs.add = this.api
-        .sendPut(`update-user/${this.id}`, this.user)
-        .subscribe(
-          (data) => {
-            this.notification.success('User Updated Successfully', 'User Updated');
-            this.router.navigate(['/']);
-          },
-          (error) => {
-            this.notification.error('Error', 'User no Updated');
-            console.log('algo salio mal');
-            // this.userForm.reset();
+      //edit User data
+      this.subs.add = this.api.sendPut(`update-user/${this.id}`, this.user).subscribe(
+        (res: any) => {
+          if (Object.keys(res).length > 0) {
+            const userSession = {
+              id: res[0].id,
+              name: res[0].name,
+              email: res[0].email,             
+              createdAt: new Date(res[0].createdAt),
+              _a: res[0].role === 'Admin' ? 1 : 0,
+            };
+  
+            this.userSrvc.setUser(userSession);
+            this.notification.success('Your profile has been updated successfully');
+            this.user = this.userSrvc.userValue;
+            this.userForm.reset();
+            this.userSrvc.logOut()
+              this.router.navigate(['security/login']);
+            
           }
-        );
+        },
+        (error) => {
+          this.notification.error('Error', 'User no Updated', error);
+            console.log('algo salio mal');
+        },
+        
+      );
     } else {
+      //normal register
+      this.user.role = 'User';
       this.subs.add = this.userSrvc.register(this.user).subscribe(
         (res) => {
           this.notification.success(
@@ -94,7 +111,7 @@ export class UserCreationComponent implements OnInit, OnDestroy {
             'usuario añadido con exito!!!'
           );
           this.userForm.reset();
-          this.router.navigate(['/security/login']);
+          this.router.navigate(['security/login']);
         },
         (error) => {
           console.log('algo salio mal', error);

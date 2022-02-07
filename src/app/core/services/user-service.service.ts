@@ -47,6 +47,7 @@ setAdminRegister(value: boolean) {
       if (Object.keys(user).length > 0) {
         // If normal login (password)
         if (password) {
+          console.log(user[0].password, password)
           let veriyPass = DecryptPassword(user[0].password, password);
           if (veriyPass) {
             let userSession: User = {
@@ -111,6 +112,16 @@ verifyPassword(email: string, password?: string) {
       }
     })
   );
+}
+addUser(userData: User) {
+  return this.http.post<any>('create-user', userData);
+}
+
+// Log Out
+logOut() {
+  localStorage.removeItem('user');
+  this.userSubject.next(null);
+  this.router.navigate(['security/login']);
 }
 
 }
