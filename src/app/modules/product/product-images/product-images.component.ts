@@ -114,7 +114,12 @@ export class ProductImagesComponent implements OnInit, OnDestroy {
   getComment() {
     this.subs.add = this.api.sendGet('get-comment-by-product-id/' + this.id).subscribe((res: any) => {
       if(res){
+        let order = res.data.sort((a,b) =>(a.createdAt > b.createdAt)? -1 : 1);
         this.spinner.hide();
+        this.comments = order       
+      }else{
+        this.comments = res.data;   
+        this.spinner.hide();    
       }
       this.comments = res.data; 
     }, error => {

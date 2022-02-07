@@ -10,14 +10,11 @@ import { AdminGuard } from 'src/app/shared/guards/admin.guard';
 const routes: Routes = [
   {
     path: '', children: [
-
       { path: 'login', component: LoginComponent, },
       { path: 'change-password', component: ChangePasswordComponent, canActivate: [AuthGuard] },
       { path: 'user-creation', component: UserCreationComponent },
       { path: 'user-creation/:id', component: UserCreationComponent, canActivate: [AuthGuard], },
       { path: 'user-list', component: UserListComponent, canActivate: [AdminGuard] },
-      
-
     ]
   }
 ];
